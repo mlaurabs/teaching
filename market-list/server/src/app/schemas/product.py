@@ -24,6 +24,20 @@ class ProdutoBuscaPorNomeSchema(BaseModel):
 
     nome: str
 
+from pydantic import BaseModel
+from typing import Optional
+
+class ProdutoUpdateSchema(BaseModel):
+    """
+    Schema para atualização de produto existente.
+    O campo 'nome' é obrigatório, pois é usado para identificar o produto a ser atualizado.
+    Os demais são opcionais.
+    """
+    nome: str
+    novo_nome: Optional[str] = None
+    quantidade: Optional[int] = None
+    valor: Optional[float] = None
+
 
 class ListagemProdutosSchema(BaseModel):
     """Listagem de produtos."""

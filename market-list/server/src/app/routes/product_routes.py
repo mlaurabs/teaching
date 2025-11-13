@@ -9,10 +9,12 @@ from src.app.schemas import (
     ProdutoDelSchema,
     ProdutoSchema,
     ProdutoViewSchema,
+    ProdutoUpdateSchema,
     apresenta_produto,
     apresenta_produtos,
 )
 from src.core.exceptions import ProductAlreadyExists, ProductNotFound
+from src.core.use_cases.update_product import UpdateProductUseCase
 from src.core.use_cases.add_product import AddProductUseCase
 from src.core.use_cases.delete_product import DeleteProductUseCase
 from src.core.use_cases.get_product import GetProductUseCase
@@ -23,14 +25,15 @@ produto_tag = Tag(
     description="Adição, visualização e remoção de produtos à base",
 )
 
-
 def register_product_routes(
     app,
-    add_use_case: AddProductUseCase,
-    list_use_case: ListProductsUseCase,
-    get_use_case: GetProductUseCase,
-    delete_use_case: DeleteProductUseCase,
-) -> None:
+    add_use_case,
+    list_use_case,
+    get_use_case,
+    delete_use_case,
+    update_use_case     
+):
+    # Rota para adicionar produto
     @app.post(
         "/produto",
         tags=[produto_tag],
@@ -51,6 +54,7 @@ def register_product_routes(
         except Exception:
             return {"mesage": "Não foi possível salvar novo item :/"}, 400
 
+    # Rota para listar produtos
     @app.get(
         "/produtos",
         tags=[produto_tag],
@@ -62,6 +66,7 @@ def register_product_routes(
             return {"produtos": []}, 200
         return apresenta_produtos(produtos), 200
 
+    # Rota para buscar um produto
     @app.get(
         "/produto",
         tags=[produto_tag],
@@ -74,6 +79,7 @@ def register_product_routes(
         except ProductNotFound as error:
             return {"mesage": str(error)}, 404
 
+    # Rota para remover um produto
     @app.delete(
         "/produto",
         tags=[produto_tag],
@@ -86,3 +92,24 @@ def register_product_routes(
             return {"mesage": "Produto removido", "nome": nome}, 200
         except ProductNotFound as error:
             return {"mesage": str(error)}, 404
+
+    @app.put(
+    "/produto",
+    tags=[produto_tag],
+    responses={"200": ProdutoViewSchema, "404": ErrorSchema, "400": ErrorSchema},
+    )
+    def update_produto(form: ProdutoUpdateSchema):
+        try:
+            updated = update_use_case.execute(
+                nome=form.nome,
+                novo_nome=form.novo_nome,
+                quantidade=form.quantidade,
+                valor=form.valor
+            )
+            return apresenta_produto(updated), 200
+
+        except ProductNotFound as error:
+            return {"message": str(error)}, 404
+
+        except Exception as error:
+            return {"message": "Erro ao atualizar produto."}, 400

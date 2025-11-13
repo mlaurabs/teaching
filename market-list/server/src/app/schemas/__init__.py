@@ -7,6 +7,7 @@ from src.app.schemas.product import (
     ProdutoBuscaSchema,
     ProdutoDelSchema,
     ProdutoSchema,
+    ProdutoUpdateSchema, 
     ProdutoViewSchema,
     apresenta_produto,
     apresenta_produtos,

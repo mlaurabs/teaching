@@ -115,3 +115,30 @@ class SqlAlchemyProductRepository(ProductRepository):
             raise
         finally:
             session.close()
+
+    def update(self, nome: str, product: Product) -> Product:
+        session = self._session_factory()
+        try:
+            existing = (
+                session.query(ProductModel)
+                .filter(ProductModel.nome == nome)
+                .first()
+            )
+
+            if not existing:
+                return None
+
+            existing.nome = product.nome
+            existing.quantidade = product.quantidade
+            existing.valor = product.valor
+
+            session.commit()
+            session.refresh(existing)
+
+            return product_mapper.to_domain(existing)
+
+        except Exception:
+            session.rollback()
+            raise
+        finally:
+            session.close()
