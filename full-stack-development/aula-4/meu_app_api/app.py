@@ -182,3 +182,22 @@ def add_comentario(form: ComentarioSchema):
 
     # retorna a representação de produto
     return apresenta_produto(produto), 200
+
+# Exemplo: lista simulada de produtos
+produtos = [
+    {"nome": "Arroz", "preco": 10.0, "quantidade": 2},
+    {"nome": "Feijão", "preco": 8.0, "quantidade": 5}
+]
+
+@app.put("/produtos/{nome}")
+def atualizar_produto(nome: str, dados: ProdutoUpdate):
+    for produto in produtos:
+        if produto["nome"].lower() == nome.lower():
+            if dados.novo_nome:
+                produto["nome"] = dados.novo_nome
+            if dados.preco is not None:
+                produto["preco"] = dados.preco
+            if dados.quantidade is not None:
+                produto["quantidade"] = dados.quantidade
+            return {"mensagem": "Produto atualizado com sucesso!", "produto": produto}
+    raise HTTPException(status_code=404, detail="Produto não encontrado")

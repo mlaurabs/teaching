@@ -59,6 +59,13 @@ class ProdutoDelSchema(BaseModel):
     mesage: str
     nome: str
 
+class ProdutoUpdate(BaseModel):
+    nome: str
+    novo_nome: Optional[str] = None
+    quantidade: Optional[int] = None
+    valor: Optional[float] = None
+
+
 def apresenta_produto(produto: Produto):
     """ Retorna uma representação do produto seguindo o schema definido em
         ProdutoViewSchema.
