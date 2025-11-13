@@ -15,7 +15,6 @@ class UpdateProductUseCase:
         if not produto:
             raise ProductNotFound(f"Produto '{nome}' não encontrado.")
 
-        # Atualiza os campos conforme o que veio no payload
         if novo_nome:
             produto.nome = novo_nome
         if quantidade is not None:
